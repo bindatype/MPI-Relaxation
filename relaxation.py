@@ -24,11 +24,14 @@ if rank == 0:
 	for elem in M: 
    		print elem
 
-	# Init Grid
-
 if rank ==0:
-	for elem in M[0:4,:]:
-		print elem
-if rank ==0:
-        for elem in M[6:10,:]:
+	for elem in M[0:4,:]: # rank 0
+		print "-",elem
+	for elem in M[2:6,:]: # rank 1 
+		print "*",elem
+	for elem in M[4:8,:]: # rank 2
+		print "%",elem
+        for elem in M[6:10,:]: # rank 3
                 print "+",elem
+
+	# M[2*rank:2*rank+subROWS]
