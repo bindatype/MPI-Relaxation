@@ -55,9 +55,6 @@ for i in xrange(100):
 
 subM = M[(ROWS/size)*rank+1:(ROWS/size)*rank+subROWS-1,:]
 #subM = M[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:]
-
-#subM = M[(ROWS/size)*rank+1:(ROWS/size)*rank+subROWS-1,:]
-subM = M[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:]
 newM=comm.gather(subM,root=0)
 if rank == 0:
 	print "Rank:0 %d\t M: %s\n " %(rank,newM)
