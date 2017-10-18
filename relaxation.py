@@ -8,7 +8,7 @@ stat = MPI.Status()
 
 
 COLS = 4
-ROWS = 8
+ROWS = 16
 if size > ROWS:
 	print("Not enough ROWS")
 	exit()
@@ -27,12 +27,15 @@ if rank == 0:
 M=comm.bcast(M,root=0)
 comm.barrier()
 
-for i in xrange(10):
+for i in xrange(100):
 	#parse out subgrids for each rank and sweep thru
 	subM = M[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:]
 	for subROW in xrange(1,subROWS-1):
 		for elem in xrange(1,COLS-1):
-			subM[subROW,elem] = (subM[subROW,elem-1]+subM[subROW,elem+1]+subM[subROW-1,elem]+subM[subROW+1,elem])/4.
+			subM[subROW,elem] = (subM[subROW,elem-1]
+						+subM[subROW,elem+1]
+						+subM[subROW-1,elem]
+						+subM[subROW+1,elem])/4.
 	M[2*rank:2*rank+subROWS,:]=subM 
 	#exhange edges for next interation
 	if rank == 0:
@@ -50,8 +53,8 @@ for i in xrange(10):
 #	print "Rank:0 %d\t M: %s " %(rank,M)
 
 
-
-subM = M[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:]
+subM = M[(ROWS/size)*rank+1:(ROWS/size)*rank+subROWS-1,:]
+#subM = M[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:]
 newM=comm.gather(subM,root=0)
 if rank == 0:
-	print "Rank:0 %d\t M: %s " %(rank,newM)
+	print "Rank:0 %d\t M: %s\n " %(rank,newM)
