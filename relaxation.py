@@ -51,6 +51,7 @@ for i in xrange(10):
 
 
 
+#subM = M[(ROWS/size)*rank+1:(ROWS/size)*rank+subROWS-1,:]
 subM = M[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:]
 newM=comm.gather(subM,root=0)
 if rank == 0:
