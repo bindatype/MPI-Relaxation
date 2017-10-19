@@ -7,7 +7,7 @@ rank = comm.Get_rank()
 stat = MPI.Status()
 
 
-COLS = 4
+COLS = 6
 ROWS = 16
 if size > ROWS:
 	print("Not enough ROWS")
@@ -17,11 +17,12 @@ subROWS=ROWS//size+2
 # Set up initial grid on rank 0
 M=None
 if rank == 0:
-	M=numpy.array(range(COLS*(ROWS+2))).reshape((ROWS+2, COLS)).astype('float')
+#	M=numpy.array(range(COLS*(ROWS+2))).reshape((ROWS+2, COLS)).astype('float')
 #	M=numpy.empty((ROWS+2, COLS)).astype('float')
-#	M=numpy.zeros((ROWS+2, COLS))
+	M=numpy.zeros((ROWS+2, COLS))
 	M[0,:] = 1.
 	M[:,0] = 1.
+	initM = M
 
 #distribute initial grid to other ranks
 M=comm.bcast(M,root=0)
@@ -49,12 +50,11 @@ for i in xrange(100):
 		comm.send(M[ROWS*(rank+1)/size,:],dest=rank+1)
 		M[ROWS*(rank)/size,:]=comm.recv(source=rank-1)
 		M[ROWS*(rank+1)/size+1,:]=comm.recv(source=rank+1)
-	#print current status
-#	print "Rank:0 %d\t M: %s " %(rank,M)
 
 
 subM = M[(ROWS/size)*rank+1:(ROWS/size)*rank+subROWS-1,:]
-#subM = M[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:]
 newM=comm.gather(subM,root=0)
 if rank == 0:
-	print "Rank:0 %d\t M: %s\n " %(rank,newM)
+	result= numpy.vstack(newM)
+	print numpy.vstack(initM)
+	print result
