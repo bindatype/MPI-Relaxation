@@ -26,7 +26,6 @@ if rank == 0:
 
 #distribute initial grid to other ranks
 M=comm.bcast(M,root=0)
-comm.barrier()
 
 for i in xrange(100):
 	#parse out subgrids for each rank and sweep thru
