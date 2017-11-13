@@ -36,7 +36,8 @@ for i in xrange(100):
 						+subGrid[subROW,elem+1]
 						+subGrid[subROW-1,elem]
 						+subGrid[subROW+1,elem])/4.
-	
+
+	#exhange edges for next interation	
 	if rank == 0:
 		comm.send(subGrid[subROWS-2,:],dest=rank+1)	
 		subGrid[subROWS-1,:]=comm.recv(source=rank+1)
@@ -44,13 +45,11 @@ for i in xrange(100):
 		comm.send(subGrid[1,:],dest=rank-1)	
 		subGrid[0,:]=comm.recv(source=rank-1)
 	else:	
-			
 		comm.send(subGrid[subROWS-2,:],dest=rank+1)	
 		comm.send(subGrid[1,:],dest=rank-1)	
 		subGrid[subROWS-1,:]=comm.recv(source=rank+1)
 		subGrid[0,:]=comm.recv(source=rank-1)
 
-	#exhange edges for next interation
 
 newGrid=comm.gather(subGrid[1:subROWS-1,:],root=0)
 
@@ -58,3 +57,12 @@ if rank == 0:
 	result= numpy.vstack(newGrid)
 	print numpy.vstack(initGrid)
 	print result
+
+#def msgUp(subGrid):
+#	comm.send(subGrid[-2,:],dest=rank+1)	
+#	return	subGrid[-1,:]=comm.recv(source=rank+1)
+
+
+#def msgDn(subGrid):
+#	comm.send(subGrid[1,:],dest=rank-1)	
+#	return subGrid[0,:]=comm.recv(source=rank-1)
