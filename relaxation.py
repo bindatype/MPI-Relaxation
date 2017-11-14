@@ -6,14 +6,14 @@ size = comm.Get_size()
 rank = comm.Get_rank()
 stat = MPI.Status()
 
-COLS = 6
-ROWS = 16
+COLS = 600
+ROWS = 32768 
 if size > ROWS:
         print("Not enough ROWS")
         exit()
 subROWS=ROWS//size+2
 
-def msgUp(subGrid,subROWS):
+def msgUp(subGrid):
         comm.send(subGrid[subROWS-2,:],dest=rank+1)
         subGrid[subROWS-1,:]=comm.recv(source=rank+1)
         return 0
@@ -23,7 +23,7 @@ def msgDn(subGrid):
         subGrid[0,:] = comm.recv(source=rank-1)
         return 0
 
-def msgSweep(subGrid,subROWS):
+def computeGridPoints(subGrid):
 	for subROW in xrange(1,subROWS-1):
 		for elem in xrange(1,COLS-1):
 			subGrid[subROW,elem] = (subGrid[subROW,elem-1]
@@ -46,19 +46,20 @@ if rank == 0:
 #distribute initial grid to other ranks
 Grid=comm.bcast(Grid,root=0)
 
-#parse out subgrids for each rank and sweep thru
+#parse out subgrids for each rank and delete Grid
 subGrid = Grid[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:]
 del Grid
 
+#compute new grid and pass rows to neighbors
 for i in xrange(100):
-	msgSweep(subGrid,subROWS)
+	computeGridPoints(subGrid)
 	#exhange edge rows for next interation	
 	if rank == 0:
-		msgUp(subGrid,subROWS)
+		msgUp(subGrid)
 	elif rank == size-1:
 		msgDn(subGrid)
 	else:	
-		msgUp(subGrid,subROWS)
+		msgUp(subGrid)
 		msgDn(subGrid)		
 
 
