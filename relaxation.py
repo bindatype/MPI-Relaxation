@@ -6,8 +6,8 @@ size = comm.Get_size()
 rank = comm.Get_rank()
 stat = MPI.Status()
 
-COLS = 600
-ROWS = 32768 
+COLS = 100
+ROWS = 8192 
 if size > ROWS:
         print("Not enough ROWS")
         exit()
@@ -67,6 +67,6 @@ newGrid=comm.gather(subGrid[1:subROWS-1,:],root=0)
 
 if rank == 0:
 	result= numpy.vstack(newGrid)
-	print numpy.vstack(initGrid)
-	print result
+#	print numpy.vstack(initGrid)
+	print result[0]
 
