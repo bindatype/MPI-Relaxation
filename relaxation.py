@@ -26,7 +26,8 @@ def msgDn(subGrid):
 def computeGridPoints(subGrid):
 	for subROW in xrange(1,subROWS-1):
 		for elem in xrange(1,COLS-1):
-			subGrid[subROW,elem] = (subGrid[subROW,elem-1]
+			subGrid[subROW,elem] = 
+			(subGrid[subROW,elem-1]
 			+subGrid[subROW,elem+1]
 			+subGrid[subROW-1,elem]
 			+subGrid[subROW+1,elem])/4.
