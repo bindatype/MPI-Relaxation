@@ -35,16 +35,22 @@ def computeGridPoints(subGrid):
 
 # Set up initial grid on rank 0
 Grid=None
-if rank == 0:
-#	M=numpy.array(range(COLS*(ROWS+2))).reshape((ROWS+2, COLS)).astype('float')
-#	M=numpy.empty((ROWS+2, COLS)).astype('float')
-	Grid=numpy.zeros((ROWS+2, COLS))
-	Grid[0,:] = 1.
-	Grid[:,0] = 1.
-	initGrid = Grid
+#if rank == 0:
+##	M=numpy.array(range(COLS*(ROWS+2))).reshape((ROWS+2, COLS)).astype('float')
+##	M=numpy.empty((ROWS+2, COLS)).astype('float')
+#	Grid=numpy.zeros((ROWS+2, COLS))
+#	Grid[0,:] = 1.
+#	Grid[:,0] = 1.
+#	initGrid = Grid
+
+
+#Every worker computes own grid.
+Grid=numpy.zeros((ROWS+2, COLS))
+Grid[0,:] = 1.
+Grid[:,0] = 1.
 
 #distribute initial grid to other ranks
-Grid=comm.bcast(Grid,root=0)
+#Grid=comm.bcast(Grid,root=0)
 
 #parse out subgrids for each rank and delete Grid
 subGrid = numpy.copy(Grid[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:])
