@@ -47,7 +47,7 @@ if rank == 0:
 Grid=comm.bcast(Grid,root=0)
 
 #parse out subgrids for each rank and delete Grid
-subGrid = Grid[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:]
+subGrid = numpy.copy(Grid[(ROWS/size)*rank:(ROWS/size)*rank+subROWS,:])
 del Grid
 
 #compute new grid and pass rows to neighbors
