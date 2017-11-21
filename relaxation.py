@@ -69,7 +69,7 @@ if rank ==0:
 
 # The main body of the algorithm
 #compute new grid and pass rows to neighbors
-oldGrid=comm.gather(subGrid[2:subROWS-1,:],root=0)
+oldGrid=comm.gather(subGrid[1:subROWS-1,:],root=0)
 for i in xrange(1,100):
 	if i%10 == 0:
 		newGrid=comm.gather(subGrid[1:subROWS-1,:],root=0)
