@@ -8,8 +8,8 @@ rank = comm.Get_rank()
 stat = MPI.Status()
 
 # Set global variables
-COLS = 100
-ROWS = 8192 
+COLS = 6
+ROWS = 32 
 if size > ROWS:
         print("Not enough ROWS")
         exit()
@@ -39,6 +39,21 @@ def computeGridPoints(subGrid):
 			+subGrid[subROW+1,elem])/4.
 	return 0
 
+def compareGridPoints(oldGrid,newGrid):
+	threshold = 1
+	OG=numpy.asarray(oldGrid)
+	NG=numpy.asarray(newGrid)
+	if OG.size != NG.size :
+		print 'Grid sizes do not match'
+		return 1
+	for i in range(OG.size):
+		if threshold < numpy.any(numpy.abs(numpy.subtract(OG,NG))):
+			print 'Change detected at iteration: %d'%(i)
+			return newGrid 
+		else:	
+			print 'No Change detected at iteration: %d'%(i)
+			return oldGrid
+
 # All workers initialize a zero-valued subgrid and 
 # boundary conditions are assigned by rank as below. 
 # This minimizes memory and communication compared to 
@@ -54,7 +69,12 @@ if rank ==0:
 
 # The main body of the algorithm
 #compute new grid and pass rows to neighbors
-for i in xrange(100):
+oldGrid=comm.gather(subGrid[2:subROWS-1,:],root=0)
+for i in xrange(1,100):
+	if i%10 == 0:
+		newGrid=comm.gather(subGrid[1:subROWS-1,:],root=0)
+		if 0 == rank:
+			oldGrid=compareGridPoints(oldGrid,newGrid)
 	computeGridPoints(subGrid)
 	#exhange edge rows for next interation	
 	if rank == 0:
@@ -71,5 +91,6 @@ newGrid=comm.gather(subGrid[1:subROWS-1,:],root=0)
 if rank == 0:
 	result= numpy.vstack(newGrid)
 #	print numpy.vstack(initGrid)
-	print result[-1]
+	print result[:]
+#	print len(result)
 
